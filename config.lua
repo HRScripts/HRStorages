@@ -43,4 +43,12 @@ config.store = {
     commandName = 'createStorage'
 }
 
+config.admins = {
+    allowedPlayers = {
+        'discord:893905751871983636'
+    },
+    removeStorageName = 'removeStorage',
+    removeAllStoragesName = 'removeAllStorages'
+}
+
 return config --[[@as HRStoragesConfig]]

@@ -25,12 +25,12 @@ local createEverything = function()
     SetEntityInvincible(seller, true)
 
     if not sellerSpawned then
-        currZones[#currZones+1] = bridge.addBoxZone({
-            coords = GetEntityCoords(seller),
-            size = vector3(0.2, 0.2, 1.0),
+        bridge.addZone({
+            entity = seller,
             options = {
                 {
                     label = ('Purchase a storage (%s$)'):format(config.store.price),
+                    distance = 2,
                     icon = 'fa-solid fa-credit-card',
                     onSelect = function()
                         TriggerServerEvent('HRStorages:purchaseStorage')
@@ -50,7 +50,7 @@ local createEverything = function()
 
                 SetEntityHeading(object, curr.position.w)
                 FreezeEntityPosition(object, true)
-                TriggerEvent('HRStorages:addZone', curr.position, HRLib.ServerCallback('isOwner', curr.owner), curr.owner, curr.stashId)
+                TriggerEvent('HRStorages:addZone', NetworkGetNetworkIdFromEntity(object), HRLib.ServerCallback('isOwner', curr.owner), curr.owner, curr.stashId)
             end
         end
 
@@ -84,75 +84,93 @@ HRLib.CreateCallback('startGizmo', true, function()
 
     FreezeEntityPosition(object, true)
 
-    return vector4(result.position.x, result.position.y, result.position.z, GetEntityHeading(object))
+    return { netId = NetworkGetNetworkIdFromEntity(object), pos = vector4(result.position.x, result.position.y, result.position.z, GetEntityHeading(object)) }
+end)
+
+HRLib.CreateCallback('isObjectAStorage', true, function(netId)
+    for i=1, #spawnedProps do
+        if spawnedProps[i] == NetworkGetEntityFromNetworkId(netId) then
+            return true
+        end
+    end
+
+    return false
+end)
+
+HRLib.CreateCallback('getClosestObject', true, function()
+    local closestObject <const> = HRLib.ClosestObject()
+    if closestObject then
+        return { netId = NetworkGetNetworkIdFromEntity(closestObject.entity), distance = closestObject.distance }
+    end
+
+    return false
 end)
 
 -- Events
 
 local robStartedAt, cooldown = nil, config.storageRobbery.cooldown.enable and (HRLib.ServerCallback('getTime') + (config.storageRobbery.cooldown.cooldown or 60000))
-RegisterNetEvent('HRStorages:addZone', function(coords, isOwner, owner, stashId)
-    local pos <const> = GetObjectOffsetFromCoords(coords, 0.0, -2.0, 1.5) ---@diagnostic disable-line: missing-parameter, param-type-mismatch
-    local options <const> = isOwner and {
-        {
-            label = 'Open your storage',
-            icon = 'fa-solid fa-box-open',
-            onSelect = function()
-                if not exports.ox_inventory:openInventory('stash', stashId) then
-                    HRLib.Notify(Translation.invalid_inventory, 'error')
-                end
-            end
-        }
-    } or {
-        {
-            label = 'Start robbing the storage',
-            icon = 'fa-solid fa-hand',
-            onSelect = function()
-                local plItems <const> = exports.ox_inventory:GetPlayerItems()
-                for i=1, #plItems do
-                    local curr <const> = plItems[i]
-                    if curr.name == config.storageRobbery.itemRequired then
-                        TaskPlayAnim(PlayerPedId(), 'mini@safe_cracking', 'dial_turn_clock_normal', 8.0, 0.0, -1, 1, 0, true, true, true)
-
-                        local result <const> = config.storageRobbery.minigameFunc()
-                        if result then
-                            if config.storageRobbery.cooldown.enable and not robStartedAt then
-                                if not exports.ox_inventory:openInventory('stash', stashId) then
-                                    HRLib.Notify(Translation.invalid_inventory, 'error')
-                                    return
-                                end
-
-                                TriggerServerEvent('HRStorages:signal', owner, pos)
-                            elseif config.storageRobbery.cooldown.enable and robStartedAt then
-                                local robbedBefore <const> = HRLib.ServerCallback('getTime') - robStartedAt
-                                if robbedBefore >= cooldown then
-                                    HRLib.Notify(Translation.cooldown_msg:format(robbedBefore, cooldown - robbedBefore), 'error')
-                                end
-                            else
-                                if not exports.ox_inventory:openInventory('stash', stashId) then
-                                    HRLib.Notify(Translation.invalid_inventory, 'error')
-                                    return
-                                end
-
-                                TriggerServerEvent('HRStorages:signal', owner, pos)
-                            end
-                        end
-
-                        TriggerServerEvent('HRStorages:removeItem')
-                        ClearPedTasks(PlayerPedId())
-
-                        return
+RegisterNetEvent('HRStorages:addZone', function(netId, isOwner, owner, stashId)
+    local storagePos <const> = GetEntityCoords(NetworkGetEntityFromNetworkId(netId))
+    bridge.addZone({
+        entity = NetworkGetEntityFromNetworkId(netId),
+        options = isOwner and {
+            {
+                label = 'Open your storage',
+                distance = 2,
+                icon = 'fa-solid fa-box-open',
+                onSelect = function()
+                    if not exports.ox_inventory:openInventory('stash', stashId) then
+                        HRLib.Notify(Translation.invalid_inventory, 'error')
                     end
                 end
+            }
+        } or {
+            {
+                label = 'Start robbing the storage',
+                distance = 2,
+                icon = 'fa-solid fa-hand',
+                onSelect = function()
+                    local plItems <const> = exports.ox_inventory:GetPlayerItems()
+                    for i=1, #plItems do
+                        local curr <const> = plItems[i]
+                        if curr.name == config.storageRobbery.itemRequired then
+                            TaskPlayAnim(PlayerPedId(), 'mini@safe_cracking', 'dial_turn_clock_normal', 8.0, 0.0, -1, 1, 0, true, true, true)
 
-                HRLib.Notify(Translation.robbery_itemRequiredNotFound:format(config.storageRobbery.itemRequired))
-            end
+                            local result <const> = config.storageRobbery.minigameFunc()
+                            if result then
+                                if config.storageRobbery.cooldown.enable and not robStartedAt then
+                                    if not exports.ox_inventory:openInventory('stash', stashId) then
+                                        HRLib.Notify(Translation.invalid_inventory, 'error')
+                                        return
+                                    end
+
+                                    TriggerServerEvent('HRStorages:signal', owner, storagePos)
+                                elseif config.storageRobbery.cooldown.enable and robStartedAt then
+                                    local robbedBefore <const> = HRLib.ServerCallback('getTime') - robStartedAt
+                                    if robbedBefore >= cooldown then
+                                        HRLib.Notify(Translation.cooldown_msg:format(robbedBefore, cooldown - robbedBefore), 'error')
+                                    end
+                                else
+                                    if not exports.ox_inventory:openInventory('stash', stashId) then
+                                        HRLib.Notify(Translation.invalid_inventory, 'error')
+                                        return
+                                    end
+
+                                    TriggerServerEvent('HRStorages:signal', owner, storagePos)
+                                end
+                            end
+
+                            TriggerServerEvent('HRStorages:removeItem')
+                            ClearPedTasks(PlayerPedId())
+
+                            return
+                        end
+                    end
+
+                    HRLib.Notify(Translation.robbery_itemRequiredNotFound:format(config.storageRobbery.itemRequired))
+                end
+            }
         }
-    }
-
-    currZones[#currZones+1] = bridge.addBoxZone({
-        coords = pos,
-        size = vector3(3, 3, 2),
-        options = options
     })
 end)
 
@@ -168,6 +186,28 @@ RegisterNetEvent('HRStorages:blipSignal', function(coords)
     SetTimeout(60000, function()
         RemoveBlip(blip)
         RemoveBlip(blip2)
+    end)
+end)
+
+RegisterNetEvent('HRStorages:removeAllStorages', function()
+    for i=1, #spawnedProps do
+        if DoesEntityExist(spawnedProps[i]) then
+            DeleteEntity(spawnedProps[i])
+
+            spawnedProps[i] = nil
+        end
+    end
+
+    for i=1, #currZones do
+        bridge.removeZone(currZones[i].id)
+
+        currZones[i] = nil
+    end
+end)
+
+RegisterNetEvent('HRStorages:removeZone', function(netId)
+    HRLib.table.focusedArray(currZones, { netId = netId }, function(_, curr)
+        bridge.removeZone(curr.id)
     end)
 end)
 

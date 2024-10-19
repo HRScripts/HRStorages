@@ -1,11 +1,13 @@
 # 📦 HRStorages
-A free FiveM storage system with ox, esx and qbcore frameworks support
+A free FiveM storage system
+This script supports Ox, ESX and QBCore frameworks
+This script supports both two targets ox_target and qb-target
 
 ## 📘 Documentation
-https://HRScripts.gitbook.io/HRStorages
+### https://HRScripts.gitbook.io/HRStorages
 
-## 📽️ Video Preview
-https://www.youtube.com/watch?v=-UAh9IydMPE&t=1s
+## 📽️ Video Prevew
+### NOT UPLOADED
 
 ## Support
-https://discord.gg/Du4gEtFn4V
+### https://discord.gg/Du4gEtFn4V

@@ -25,5 +25,6 @@ files {
 dependencies {
     'HRLib',
     'object_gizmo',
-    'ox_inventory'
+    'ox_inventory',
+    'ox_target'
 }

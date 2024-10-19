@@ -7,41 +7,30 @@ local isStarted = function(resName)
     return GetResourceState(resName):find('start') ~= nil
 end
 
----@param settings { coords: vector3, size: vector3, options: table[] }
----@return string?
-bridge.addBoxZone = function(settings)
+---@param settings { entity: integer, options: table[] }
+bridge.addZone = function(settings)
     if config.target == 'ox_target' and isStarted(config.target) then
-        return exports.ox_target:addBoxZone({
-            coords = settings.coords,
-            size = settings.size,
-            options = settings.options
-        })
+        return exports.ox_target:addLocalEntity(settings.entity, settings.options)
     elseif config.target == 'qb-target' and isStarted(config.target) then
-        local id = ('storages_zones_%s'):format(GetGameTimer() + math.random(1, 100))
-
         for i=1, #settings.options do
             settings.options[i].action = settings.options[i].onSelect
             settings.options[i].onSelect = nil
+            settings.options[i].distance = nil
         end
 
-        exports['qb-target']:AddBoxZone('whaatt?', settings.coords, settings.size.y, settings.size.x, {
-            name = id,
-            heading = 0.0,
-            debugPoly = false,
-            minZ = settings.size - settings.size * 2,
-            maxZ = settings.size
-        }, settings.options)
-
-        return id
+        exports['qb-target']:AddTargetEntity(settings.entity, {
+            options = settings.options,
+            distance = 1.5
+        })
     end
 end
 
----@param id string
-bridge.removeZone = function(id)
+---@param entity integer
+bridge.removeZone = function(entity)
     if config.target == 'ox_target' and isStarted(config.target) then
-        exports.ox_target:removeZone(id)
+        exports.ox_target:removeLocalEntity(entity)
     elseif config.target == 'qb-target' and isStarted(config.target) then
-        exports['qb-target']:RemoveZone(id)
+        exports['qb-target']:RemoveTargetEntity(entity)
     end
 end
 

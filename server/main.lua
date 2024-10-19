@@ -1,9 +1,24 @@
 local HRLib <const>, Translation <const>, MySQL <const> = HRLib --[[@as HRLibServerFunctions]], Translation --[[@as HRStoragesTranslation]], MySQL
-local config <const>, bridge <const>, storages = HRLib.require(('@%s/config.lua'):format(GetCurrentResourceName())) --[[@as HRStoragesConfig]], HRLib.require(('@%s/server/bridge.lua'):format(GetCurrentResourceName())) --[[@as HRStoragesServerBridge]], json.decode(LoadResourceFile(GetCurrentResourceName(), 'storages.json') or 'null')
+local config <const>, storages = HRLib.require(('@%s/config.lua'):format(GetCurrentResourceName())) --[[@as HRStoragesConfig]], json.decode(LoadResourceFile(GetCurrentResourceName(), 'storages.json') or 'null')
 local ox_inventory <const> = exports.ox_inventory
 config.stashSettings.maxWeight *= 1000
 
-if not bridge then return end
+-- Functions
+
+---Checks if the specified player is allowed to the staff commands
+---@param identifiers table
+---@return boolean
+local isAllowed = function(identifiers)
+    for i=1, #config.admins.allowedPlayers do
+        local curr <const> = config.admins.allowedPlayers[i]
+        local prefix <const> = select(1, HRLib.string.split(curr, ':'))
+        if prefix and identifiers[prefix] and identifiers[prefix] == curr then
+            return true
+        end
+    end
+
+    return false
+end
 
 -- OnEvents
 
@@ -12,11 +27,16 @@ HRLib.OnStart(nil, function()
 
     storages = MySQL.query.await('SELECT * FROM `storages`;')
 
-    for i=1, #storages do
-        local curr <const> = storages[i]
-        if not ox_inventory:GetInventory(curr.stashId, false) then
-            ox_inventory:RegisterStash(curr.stashId, ('%s\'s storage'):format(curr.owner_name), config.stashSettings.maxSlots, config.stashSettings.maxWeight, nil, false)
+    if type(storages) == 'table' and table.type(storages) == 'array' then
+        for i=1, #storages do
+            local curr <const> = storages[i]
+            storages[i].position = json.decode(storages[i].position)
+            if not ox_inventory:GetInventory(curr.stashId, false) then
+                ox_inventory:RegisterStash(curr.stashId, ('%s\'s storage'):format(curr.owner_name), config.stashSettings.maxSlots, config.stashSettings.maxWeight, nil, false)
+            end
         end
+    else
+        storages = {}
     end
 end)
 
@@ -46,12 +66,12 @@ end)
 -- Events
 
 RegisterNetEvent('HRStorages:purchaseStorage', function()
-    local cash <const>, bank <const> = bridge.get(source, 'money', 'cash') --[[@as integer]], bridge.get(source, 'money', 'bank') --[[@as integer]]
+    local cash <const>, bank <const> = HRLib.bridge.getMoney(source, 'cash') --[[@as integer]], HRLib.bridge.getMoney(source, 'bank') --[[@as integer]]
     if config.store.getMoneyFrom == 'cash' and cash >= config.store.price or config.store.getMoneyFrom == 'bank' and bank >= config.store.price or config.store.getMoneyFrom == 'both' and cash + bank >= config.store.price then
         Player(source).state.canUseTheCommand = true
 
         if cash >= config.store.price or bank >= config.store.price then
-            bridge.removeMoney(source, cash >= config.store.price and 'cash' or 'bank', config.store.price)
+            HRLib.bridge.setMoney(source, cash >= config.store.price and 'cash' or 'bank', (cash >= config.store.price and 'cash' or 'bank') == 'cash' and cash - config.store.price or bank - config.store.price)
         elseif cash + bank >= config.store.price then
             bridge.removeMoney(source, 'bank', cash > bank and bank or cash)
             bridge.removeMoney(source, 'cash', config.store.price - cash > bank and bank or cash)
@@ -72,7 +92,7 @@ RegisterNetEvent('HRStorages:signal', function(owner, coords)
     local pls <const> = GetPlayers()
     for i=1, #pls do
         local curr <const> = pls[i] --[[@as integer]]
-        if bridge.get(curr, 'job') == 'police' then
+        if HRLib.bridge.getJob(curr) == 'police' then
             TriggerClientEvent('HRStorages:blipSignal', curr, coords)
             HRLib.Notify(curr, Translation.robberyInProgress, 'info')
         end
@@ -101,32 +121,63 @@ end)
 
 HRLib.RegCommand(config.store.commandName, false, true, function(_, _, IPlayer, FPlayer)
     if IPlayer.state.canUseTheCommand then
-        local storagePos <const> = HRLib.ClientCallback('startGizmo', IPlayer.source)
+        local storage <const> = HRLib.ClientCallback('startGizmo', IPlayer.source)
         local stashId <const> = ('storages_stash_%s'):format(os.time() + math.random(1, 100))
         IPlayer.state.canUseTheCommand = false
         storages[#storages+1] = {
             stashId = stashId,
             owner = IPlayer.identifier.license,
-            owner_name = bridge.get(IPlayer.source, 'name'),
+            owner_name = HRLib.bridge.getName(IPlayer.source, 'name'),
             creation_date = os.date('%d/%m/%Y | %X'),
-            position = { x = storagePos.x, y = storagePos.y, z = storagePos.z, w = storagePos.w }
+            position = storage.pos
         }
 
         local pls <const> = GetPlayers()
         for i=1, #pls do
             local curr <const> = tonumber(pls[i]) --[[@as integer]]
-            TriggerClientEvent('HRStorages:addZone', curr, storagePos, HRLib.PlayerIdentifier(curr, 'license') == IPlayer.identifier.license, IPlayer.identifier.license, stashId)
+            TriggerClientEvent('HRStorages:addZone', curr, storage.netId, HRLib.PlayerIdentifier(curr, 'license') == IPlayer.identifier.license, IPlayer.identifier.license, stashId)
         end
 
-        MySQL.insert.await('INSERT INTO `storages` (`stashId`, `owner`, `owner_name`, `creation_date`, `position`) VALUES (?, ?, ?, ?, ?)', { stashId, IPlayer.identifier.license, bridge.get(IPlayer.source, 'name'), os.date('%d/%m/%Y | %X'), json.encode(storagePos) })
-        ox_inventory:RegisterStash(stashId, ('%s\'s storage'):format(bridge.get(IPlayer.source, 'name')), config.stashSettings.maxSlots, config.stashSettings.maxWeight, nil, false)
+        MySQL.insert.await('INSERT INTO `storages` (`stashId`, `owner`, `owner_name`, `creation_date`, `position`) VALUES (?, ?, ?, ?, ?)', { stashId, IPlayer.identifier.license, HRLib.bridge.getName(IPlayer.source, 'name'), os.date('%d/%m/%Y | %X'), json.encode(storage.pos) })
+        ox_inventory:RegisterStash(stashId, ('%s\'s storage'):format(HRLib.bridge.getName(IPlayer.source, 'name')), config.stashSettings.maxSlots, config.stashSettings.maxWeight, nil, false)
     else
-        FPlayer:Notify(Translation.command_access_denied, 'error')
+        FPlayer:Notify(Translation.access_denied, 'error')
     end
-end, false, { help = 'Create a storage' })
+end, true, { help = 'Create a storage', restricted = true })
 
--- Exports
+HRLib.RegCommand(config.admins.removeStorageName, false, true, function(_, _, IPlayer, FPlayer)
+    if isAllowed(IPlayer.identifier) then
+        local closestObject <const> = HRLib.ClientCallback('getClosestObject', IPlayer.source)
+        if closestObject then
+            closestObject.entity = NetworkGetEntityFromNetworkId(closestObject.netId)
 
-exports('getAllStorages', function()
-    return storages
-end)
+            if HRLib.ClientCallback('isObjectAStorage', IPlayer.source, closestObject.netId) then
+                DeleteEntity(closestObject.entity)
+
+                for i=1, #storages do
+                    local currPos <const> = storages[i].position
+                    if #(vector3(currPos.x, currPos.y, currPos.z) - GetEntityCoords(closestObject.entity)) <= 0.5 then
+                        TriggerClientEvent('HRStorages:removeZone', -1, closestObject.netId)
+                        MySQL.prepare('DELETE FROM `storages` WHERE `stashId` = ?;', { storages[i].stashId })
+                        FPlayer:Notify(Translation.removeStorage_successful, 'success')
+                        return
+                    end
+                end
+            else
+                FPlayer:Notify(Translation.removeStorage_failed_noCloseStorages, 'error')
+            end
+        end
+    else
+        FPlayer:Notify(Translation.access_denied, 'error')
+    end
+end, true, { help = 'Remove a storage', restricted = true })
+
+HRLib.RegCommand(config.admins.removeAllStoragesName, true, true, function(_, _, IPlayer, FPlayer)
+    if isAllowed(IPlayer.identifier) then
+        MySQL.prepare('DELETE FROM `storages`;')
+        TriggerClientEvent('HRStorages:removeAllStorages', -1)
+        FPlayer:Notify(Translation.removeAllStorages_successful)
+    else
+        FPlayer:Notify(Translation.access_denied, 'error')
+    end
+end, true, { help = 'Remove All Storages', restricted = true })
