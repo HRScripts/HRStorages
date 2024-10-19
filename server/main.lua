@@ -157,7 +157,6 @@ HRLib.RegCommand(config.admins.removeStorageName, false, true, function(_, _, IP
                 for i=1, #storages do
                     local currPos <const> = storages[i].position
                     if #(vector3(currPos.x, currPos.y, currPos.z) - GetEntityCoords(closestObject.entity)) <= 0.5 then
-                        TriggerClientEvent('HRStorages:removeZone', -1, closestObject.netId)
                         MySQL.prepare('DELETE FROM `storages` WHERE `stashId` = ?;', { storages[i].stashId })
                         FPlayer:Notify(Translation.removeStorage_successful, 'success')
                         return

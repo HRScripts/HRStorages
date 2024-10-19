@@ -205,12 +205,6 @@ RegisterNetEvent('HRStorages:removeAllStorages', function()
     end
 end)
 
-RegisterNetEvent('HRStorages:removeZone', function(netId)
-    HRLib.table.focusedArray(currZones, { netId = netId }, function(_, curr)
-        bridge.removeZone(curr.id)
-    end)
-end)
-
 -- Exports
 
 exports('getStorages', function()
