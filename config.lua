@@ -45,7 +45,7 @@ config.store = {
 
 config.admins = {
     allowedPlayers = {
-        'discord:893905751871983636'
+        'discord:.....'
     },
     removeStorageName = 'removeStorage',
     removeAllStoragesName = 'removeAllStorages'
