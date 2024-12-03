@@ -4,10 +4,10 @@ This script supports Ox, ESX and QBCore frameworks
 This script supports both two targets ox_target and qb-target
 
 ## 📘 Documentation
-### https://HRScripts.gitbook.io/HRStorages
+https://HRScripts.gitbook.io/HRStorages
 
 ## 📽️ Video Prevew
-### NOT UPLOADED
+https://www.youtube.com/watch?v=-UAh9IydMPE&pp=ygUKSFJTdG9yYWdlcw%3D%3D
 
 ## Support
-### https://discord.gg/Du4gEtFn4V
+https://discord.gg/Du4gEtFn4V
