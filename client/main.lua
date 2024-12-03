@@ -14,10 +14,11 @@ local createEverything = function()
 
     local pedModel <const> = joaat(config.store.ped.models[math.random(1, #config.store.ped.models)])
 
-    HRLib.RequestModel(pedModel)
+    HRLib.RequestModel({ pedModel, storageProp })
     HRLib.RequestAnimDict('mini@strip_club@idles@bouncer@base')
 
     local seller <const> = CreatePed(4, pedModel, config.store.ped.coords, false, true) ---@diagnostic disable-line: missing-parameter, param-type-mismatch
+
     SetModelAsNoLongerNeeded(pedModel)
     TaskPlayAnim(seller, 'mini@strip_club@idles@bouncer@base', 'base', 8.0, 8.0, -1, 1, 0, false, false, false)
     FreezeEntityPosition(seller, true)
@@ -45,7 +46,7 @@ local createEverything = function()
         for i=1, #storages do
             local curr <const> = storages[i]
             if curr.position then
-                local object <const> = CreateObject(storageProp, curr.position.x, curr.position.y, curr.position.z, true, true, true)
+                local object <const> = CreateObject(storageProp, curr.position.x, curr.position.y, curr.position.z, false, true, true)
                 spawnedProps[#spawnedProps+1] = object
 
                 SetEntityHeading(object, curr.position.w)

@@ -24,7 +24,7 @@ return {
         robberyInProgress = 'A robbery\'s started!',
         blipTitle = 'Storage robbery in progress',
         removeStorage_successful = 'The storage was removed successfully!',
-        removeStorage_failed_noCloseStorages = 'There is no close storages to you!',
+        removeStorage_failed_noCloseStorages = 'There are no close storages to you!',
         removeAllStorages_successful = 'All storages were removed successfully!'
     },
     de = {
