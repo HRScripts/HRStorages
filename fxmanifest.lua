@@ -6,7 +6,7 @@ name 'HRStorages'
 author 'HRScripts Development'
 description 'Storage system'
 repository 'https://github.com/HRScripts/HRStorages'
-version '1.0.1'
+version '1.5.5'
 
 shared_script '@HRLib/import.lua'
 
