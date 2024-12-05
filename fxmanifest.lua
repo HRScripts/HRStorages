@@ -5,7 +5,8 @@ lua54 'yes'
 name 'HRStorages'
 author 'HRScripts Development'
 description 'Storage system'
-version '1.0.0'
+repository 'https://github.com/HRScripts/HRStorages'
+version '1.0.1'
 
 shared_script '@HRLib/import.lua'
 
