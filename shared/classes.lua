@@ -5,7 +5,7 @@
 ---@field storageRobbery { cooldown: { enable: boolean?, cooldown: number? }, itemRequired: string, minigameFunc: fun(): boolean }
 ---@field signal { enableOwnerSignal: boolean?, blipRadius: number?, color: integer, alpha: number }
 ---@field stashSettings { maxSlots: integer, maxWeight: integer }
----@field store { ped: { models: string[], coords: vector4 }, price: integer, getMoneyFrom: 'cash'|'bank'|'both', commandName: string }
+---@field store { ped: { models: string[], coords: vector4 }, price: integer, getMoneyFrom: 'cash'|'bank'|'both', commandName: string, blip: { sprite: integer, scale: number, colour: integer, label: string } }
 ---@field admins { removeStorageName: string, removeAllStoragesName: string, allowedPlayers: string[] }
 
 ---@class HRStoragesClientBridge

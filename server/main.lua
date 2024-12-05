@@ -1,4 +1,4 @@
-local HRLib <const>, Translation <const>, MySQL <const> = HRLib --[[@as HRLibServerFunctions]], Translation --[[@as HRStoragesTranslation]], MySQL
+local HRLib <const>, Translation <const>, MySQL <const> = HRLib --[[@as HRLibServerFunctions]], Translation --[[@as HRStoragesTranslation]], MySQL ---@diagnostic disable-line: undefined-global
 local config <const>, storages = HRLib.require(('@%s/config.lua'):format(GetCurrentResourceName())) --[[@as HRStoragesConfig]], json.decode(LoadResourceFile(GetCurrentResourceName(), 'storages.json') or 'null')
 local ox_inventory <const> = exports.ox_inventory
 config.stashSettings.maxWeight *= 1000
@@ -73,8 +73,8 @@ RegisterNetEvent('HRStorages:purchaseStorage', function()
         if cash >= config.store.price or bank >= config.store.price then
             HRLib.bridge.setMoney(source, cash >= config.store.price and 'cash' or 'bank', (cash >= config.store.price and 'cash' or 'bank') == 'cash' and cash - config.store.price or bank - config.store.price)
         elseif cash + bank >= config.store.price then
-            bridge.removeMoney(source, 'bank', cash > bank and bank or cash)
-            bridge.removeMoney(source, 'cash', config.store.price - cash > bank and bank or cash)
+            HRLib.bridge.removeMoney(source, 'bank', cash > bank and bank or cash)
+            HRLib.bridge.removeMoney(source, 'cash', config.store.price - cash > bank and bank or cash)
         end
 
         HRLib.Notify(source, Translation.purchase_successful_1, 'success', 6000)
@@ -127,7 +127,7 @@ HRLib.RegCommand(config.store.commandName, false, true, function(_, _, IPlayer, 
         storages[#storages+1] = {
             stashId = stashId,
             owner = IPlayer.identifier.license,
-            owner_name = HRLib.bridge.getName(IPlayer.source, 'name'),
+            owner_name = HRLib.bridge.getName(IPlayer.source),
             creation_date = os.date('%d/%m/%Y | %X'),
             position = storage.pos
         }
@@ -138,8 +138,8 @@ HRLib.RegCommand(config.store.commandName, false, true, function(_, _, IPlayer, 
             TriggerClientEvent('HRStorages:addZone', curr, storage.netId, HRLib.PlayerIdentifier(curr, 'license') == IPlayer.identifier.license, IPlayer.identifier.license, stashId)
         end
 
-        MySQL.insert.await('INSERT INTO `storages` (`stashId`, `owner`, `owner_name`, `creation_date`, `position`) VALUES (?, ?, ?, ?, ?)', { stashId, IPlayer.identifier.license, HRLib.bridge.getName(IPlayer.source, 'name'), os.date('%d/%m/%Y | %X'), json.encode(storage.pos) })
-        ox_inventory:RegisterStash(stashId, ('%s\'s storage'):format(HRLib.bridge.getName(IPlayer.source, 'name')), config.stashSettings.maxSlots, config.stashSettings.maxWeight, nil, false)
+        MySQL.insert.await('INSERT INTO `storages` (`stashId`, `owner`, `owner_name`, `creation_date`, `position`) VALUES (?, ?, ?, ?, ?)', { stashId, IPlayer.identifier.license, HRLib.bridge.getName(IPlayer.source), os.date('%d/%m/%Y | %X'), json.encode(storage.pos) })
+        ox_inventory:RegisterStash(stashId, ('%s\'s storage'):format(HRLib.bridge.getName(IPlayer.source)), config.stashSettings.maxSlots, config.stashSettings.maxWeight, nil, false)
     else
         FPlayer:Notify(Translation.access_denied, 'error')
     end

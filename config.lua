@@ -40,7 +40,13 @@ config.store = {
     },
     price = 30000,
     getMoneyFrom = 'both', -- 'cash' or 'bank' or 'both'
-    commandName = 'createStorage'
+    commandName = 'createStorage',
+    blip = {
+        sprite = 1,
+        scale = 1.0,
+        colour = 2,
+        label = 'Purchase a storage'
+    }
 }
 
 config.admins = {

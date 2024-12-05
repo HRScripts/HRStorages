@@ -25,6 +25,24 @@ local createEverything = function()
     SetBlockingOfNonTemporaryEvents(seller, true)
     SetEntityInvincible(seller, true)
 
+    local blip <const> = HRLib.CreateBlip({
+        type = 'forCoord',
+        label = config.store.blip.label,
+        specificOptions = {
+            coords = vector3(config.store.ped.coords.x, config.store.ped.coords.y, config.store.ped.coords.z)
+        },
+        options = {
+            scale = config.store.blip.scale,
+            sprite = config.store.blip.sprite,
+            colour = config.store.blip.colour
+        }
+    })
+
+    local cmdName <const> = ('blip_%s'):format(blip)
+    BeginTextCommandSetBlipName(cmdName)
+    AddTextEntry(cmdName, config.store.blip.label)
+    EndTextCommandSetBlipName(blip --[[@as integer]])
+
     if not sellerSpawned then
         bridge.addZone({
             entity = seller,
@@ -51,7 +69,7 @@ local createEverything = function()
 
                 SetEntityHeading(object, curr.position.w)
                 FreezeEntityPosition(object, true)
-                TriggerEvent('HRStorages:addZone', NetworkGetNetworkIdFromEntity(object), HRLib.ServerCallback('isOwner', curr.owner), curr.owner, curr.stashId)
+                TriggerEvent('HRStorages:addZone', object, HRLib.ServerCallback('isOwner', curr.owner), curr.owner, curr.stashId)
             end
         end
 
@@ -111,9 +129,10 @@ end)
 
 local robStartedAt, cooldown = nil, config.storageRobbery.cooldown.enable and (HRLib.ServerCallback('getTime') + (config.storageRobbery.cooldown.cooldown or 60000))
 RegisterNetEvent('HRStorages:addZone', function(netId, isOwner, owner, stashId)
-    local storagePos <const> = GetEntityCoords(NetworkGetEntityFromNetworkId(netId))
+    if not DoesEntityExist(netId) then netId = NetworkGetEntityFromNetworkId(netId) end
+    local storagePos <const> = GetEntityCoords(netId)
     bridge.addZone({
-        entity = NetworkGetEntityFromNetworkId(netId),
+        entity = netId,
         options = isOwner and {
             {
                 label = 'Open your storage',
