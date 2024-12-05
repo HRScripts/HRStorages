@@ -146,7 +146,7 @@ HRLib.RegCommand(config.store.commandName, false, true, function(_, _, IPlayer, 
 end, true, { help = 'Create a storage', restricted = true })
 
 HRLib.RegCommand(config.admins.removeStorageName, false, true, function(_, _, IPlayer, FPlayer)
-    if isAllowed(IPlayer.identifier) then
+    if IPlayer.source == 0 or isAllowed(IPlayer.identifier) then
         local closestObject <const> = HRLib.ClientCallback('getClosestObject', IPlayer.source)
         if closestObject then
             closestObject.entity = NetworkGetEntityFromNetworkId(closestObject.netId)
@@ -172,7 +172,7 @@ HRLib.RegCommand(config.admins.removeStorageName, false, true, function(_, _, IP
 end, true, { help = 'Remove a storage', restricted = true })
 
 HRLib.RegCommand(config.admins.removeAllStoragesName, true, true, function(_, _, IPlayer, FPlayer)
-    if isAllowed(IPlayer.identifier) then
+    if IPlayer.source == 0 or isAllowed(IPlayer.identifier) then
         MySQL.prepare('DELETE FROM `storages`;')
         TriggerClientEvent('HRStorages:removeAllStorages', -1)
         FPlayer:Notify(Translation.removeAllStorages_successful)
