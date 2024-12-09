@@ -1,7 +1,7 @@
 local HRLib <const>, Translation <const> = HRLib --[[@as HRLibClientFunctions]], Translation --[[@as HRStoragesTranslation]]
 local config <const>, bridge <const> = HRLib.require(('@%s/config.lua'):format(GetCurrentResourceName())) --[[@as HRStoragesConfig]], HRLib.require(('@%s/client/bridge.lua'):format(GetCurrentResourceName())) --[[@as HRStoragesClientBridge]]
 local storageProp <const>, currZones <const>, spawnedProps <const> = joaat(config.storageProp), {}, {}
-local sellerSpawned
+local sellerSpawned, firstSpawned = nil, true
 
 if not bridge then return end
 
@@ -78,7 +78,13 @@ local createEverything = function()
 end
 
 HRLib.OnStart(nil, createEverything)
-HRLib.OnPlSpawn(createEverything)
+HRLib.OnPlSpawn(function()
+    if firstSpawned then
+        createEverything()
+
+        firstSpawned = false
+    end
+end)
 HRLib.OnStop(nil, function()
     for i=1, #currZones do
         bridge.removeZone(currZones[i])
