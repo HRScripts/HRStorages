@@ -143,7 +143,7 @@ HRLib.RegCommand(config.store.commandName, false, true, function(_, _, IPlayer, 
     else
         FPlayer:Notify(Translation.access_denied, 'error')
     end
-end, true, { help = 'Create a storage', restricted = true })
+end, false, { help = 'Create a storage' })
 
 HRLib.RegCommand(config.admins.removeStorageName, false, true, function(_, _, IPlayer, FPlayer)
     if IPlayer.source == 0 or isAllowed(IPlayer.identifier) then
