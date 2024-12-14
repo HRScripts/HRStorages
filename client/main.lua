@@ -79,6 +79,8 @@ end
 
 HRLib.OnStart(nil, createEverything)
 HRLib.OnPlSpawn(function()
+    Wait(1000)
+
     if firstSpawned then
         createEverything()
 
