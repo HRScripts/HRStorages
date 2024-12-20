@@ -27,7 +27,6 @@ local createEverything = function()
 
     local blip <const> = HRLib.CreateBlip({
         type = 'forCoord',
-        label = config.store.blip.label,
         specificOptions = {
             coords = vector3(config.store.ped.coords.x, config.store.ped.coords.y, config.store.ped.coords.z)
         },
