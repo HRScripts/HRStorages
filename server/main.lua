@@ -148,7 +148,7 @@ end, false, { help = 'Create a storage' })
 HRLib.RegCommand(config.admins.removeStorageName, false, true, function(_, _, IPlayer, FPlayer)
     if IPlayer.source == 0 or isAllowed(IPlayer.identifier) then
         local closestObject <const> = HRLib.ClientCallback('getClosestObject', IPlayer.source)
-        if closestObject then
+        if closestObject and closestObject.netId then
             closestObject.entity = NetworkGetEntityFromNetworkId(closestObject.netId)
 
             if HRLib.ClientCallback('isObjectAStorage', IPlayer.source, closestObject.netId) then

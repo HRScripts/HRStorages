@@ -126,7 +126,8 @@ end)
 HRLib.CreateCallback('getClosestObject', true, function()
     local closestObject <const> = HRLib.ClosestObject()
     if closestObject then
-        return { netId = NetworkGetNetworkIdFromEntity(closestObject.entity), distance = closestObject.distance }
+        local netId <const> = NetworkGetNetworkIdFromEntity(closestObject.entity)
+        return { netId = NetworkDoesEntityExistWithNetworkId(netId) and netId, distance = closestObject.distance }
     end
 
     return false
