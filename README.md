@@ -6,8 +6,7 @@ HRStorages is a versatile and easy-to-use storage system for FiveM. It is compat
 - **Multi-framework support**: Works seamlessly with **Ox**, **ESX**, and **QBCore** frameworks.
 - **Target system compatibility**: Supports **ox_target** and **qb-target**.
 - **Fully customizable**: Easily adjust storage options and settings to fit your server needs.
-- **Free and open-source**: No cost to use or distribute, with an active community contributing to improvements.
-- **Auto database insertation**: You don't need to insert the sql file manually.
+- **Auto database insertion**: You don't need to insert the sql file manually.
 
 ## 📘 Documentation
 
