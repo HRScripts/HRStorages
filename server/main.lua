@@ -180,3 +180,18 @@ HRLib.RegCommand(config.admins.removeAllStoragesName, true, true, function(_, _,
         FPlayer:Notify(Translation.access_denied, 'error')
     end
 end, true, { help = 'Remove All Storages', restricted = true })
+
+-- Exports
+
+exports('getAllStorages', function()
+    local result <const> = MySQL.query.await('SELECT * FROM `storages`;')
+
+    if result then
+        for i=1, #result do
+            local currPos <const> = json.decode(result[i].position)
+            result[i].position = vector4(currPos.x, currPos.y, currPos.z, currPos.w)
+        end
+    end
+
+    return result
+end)

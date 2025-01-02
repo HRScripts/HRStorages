@@ -5,7 +5,7 @@ local sellerSpawned, firstSpawned = nil, true
 
 if not bridge then return end
 
--- OnEvents
+-- Functions
 
 local createEverything = function()
     if sellerSpawned then DeleteEntity(sellerSpawned) end
@@ -76,7 +76,10 @@ local createEverything = function()
     end
 end
 
+-- OnEvents
+
 HRLib.OnStart(nil, createEverything)
+
 HRLib.OnPlSpawn(function()
     Wait(1000)
 
@@ -86,6 +89,7 @@ HRLib.OnPlSpawn(function()
         firstSpawned = false
     end
 end)
+
 HRLib.OnStop(nil, function()
     for i=1, #currZones do
         bridge.removeZone(currZones[i])
