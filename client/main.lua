@@ -81,9 +81,11 @@ end
 HRLib.OnStart(nil, createEverything)
 
 HRLib.OnPlSpawn(function()
-    Wait(1000)
-
     if firstSpawned then
+        while IsScreenFadedOut() do
+            Wait(10)
+        end
+
         createEverything()
 
         firstSpawned = false
