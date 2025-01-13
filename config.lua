@@ -50,6 +50,7 @@ config.store = {
 }
 
 config.admins = {
+    enableAdditionalAcess = false,
     allowedPlayers = {
         'discord:.....'
     },

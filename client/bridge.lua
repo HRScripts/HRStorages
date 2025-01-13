@@ -10,7 +10,11 @@ end
 ---@param settings { entity: integer, options: table[] }
 bridge.addZone = function(settings)
     if config.target == 'ox_target' and isStarted(config.target) then
-        return exports.ox_target:addLocalEntity(settings.entity, settings.options)
+        if IsEntityAPed(settings.entity) then
+            return exports.ox_target:addLocalEntity(settings.entity, settings.options)
+        else
+            return exports.ox_target:addEntity(ObjToNet(settings.entity), settings.options)
+        end
     elseif config.target == 'qb-target' and isStarted(config.target) then
         for i=1, #settings.options do
             settings.options[i].action = settings.options[i].onSelect
