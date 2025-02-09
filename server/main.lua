@@ -192,7 +192,9 @@ AddStateBagChangeHandler('isPlayerSpawned', nil, function(_, _, value) ---@diagn
     if value and canSpawn then
         if type(storages) == 'table' and table.type(storages) == 'array' then
             for i=1, #storages do
-                storages[i].position = json.decode(storages[i].position)
+                if type(storages[i].position) == 'string' then
+                    storages[i].position = json.decode(storages[i].position)
+                end
 
                 local curr <const> = storages[i]
 
