@@ -146,13 +146,9 @@ RegisterNetEvent('HRStorages:purchaseStorage', function()
 
         HRLib.Notify(source, Translation.purchase_successful_1, 'success', 6000)
         HRLib.Notify(source, Translation.purchase_successful_2:format(config.store.commandName), 'success', 6000)
-
-        return true
     end
 
     HRLib.Notify(source, Translation.not_enoughMoney, 'error')
-
-    return false
 end)
 
 RegisterNetEvent('HRStorages:signal', function(owner, coords)
