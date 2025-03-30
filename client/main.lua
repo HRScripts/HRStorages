@@ -1,4 +1,4 @@
-local HRLib <const>, Translation <const> = HRLib --[[@as HRLibClientFunctions]], Translation --[[@as HRStoragesTranslation]]
+local HRLib <const>, Translation <const> = HRLib --[[]], Translation --[[@as HRStoragesTranslation]]
 local config <const>, bridge <const> = HRLib.require(('@%s/config.lua'):format(GetCurrentResourceName())) --[[@as HRStoragesConfig]], HRLib.require(('@%s/client/bridge.lua'):format(GetCurrentResourceName())) --[[@as HRStoragesClientBridge]]
 local storageProp <const>, currZones <const> = joaat(config.storageProp), {}
 local sellerSpawned, firstSpawned = nil, true
@@ -66,12 +66,14 @@ HRLib.OnStart(nil, createEverything)
 HRLib.OnPlSpawn(function()
     if firstSpawned then
         while IsScreenFadedOut() do
-            Wait(10)
+            Wait(200)
         end
 
-        createEverything()
+        if NetworkIsPlayerActive(PlayerId()) then
+            createEverything()
 
-        firstSpawned = false
+            firstSpawned = false
+        end
     end
 end)
 

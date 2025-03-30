@@ -1,4 +1,4 @@
-local HRLib <const>, Translation <const>, MySQL <const> = HRLib --[[@as HRLibServerFunctions]], Translation --[[@as HRStoragesTranslation]], MySQL ---@diagnostic disable-line: undefined-global
+local HRLib <const>, Translation <const>, MySQL <const> = HRLib --[[]], Translation --[[@as HRStoragesTranslation]], MySQL ---@diagnostic disable-line: undefined-global
 local config <const>, spawnedProps <const>, storages = HRLib.require(('@%s/config.lua'):format(GetCurrentResourceName())) --[[@as HRStoragesConfig]], {}, json.decode(LoadResourceFile(GetCurrentResourceName(), 'storages.json') or 'null')
 local ox_inventory <const> = exports.ox_inventory
 local canSpawn = true
