@@ -1,4 +1,4 @@
-local HRLib <const>, Translation <const> = HRLib --[[]], Translation --[[@as HRStoragesTranslation]]
+local HRLib <const>, Translation <const> = HRLib, Translation --[[@as HRStoragesTranslation]]
 local config <const>, bridge <const> = HRLib.require(('@%s/config.lua'):format(GetCurrentResourceName())) --[[@as HRStoragesConfig]], HRLib.require(('@%s/client/bridge.lua'):format(GetCurrentResourceName())) --[[@as HRStoragesClientBridge]]
 local storageProp <const>, currZones <const> = joaat(config.storageProp), {}
 local sellerSpawned, firstSpawned = nil, true
