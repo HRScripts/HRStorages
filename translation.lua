@@ -11,7 +11,8 @@ return {
         blipTitle = 'Извършва се обир на склад!',
         removeStorage_successful = 'Премахването на склада е извършено успешно!',
         removeStorage_failed_noCloseStorages = 'Няма хранилища наблизо!',
-        removeAllStorages_successful = 'Всички складове бяха премахнати успешно!'
+        removeAllStorages_successful = 'Всички складове бяха премахнати успешно!',
+        currency = '%sлв'
     },
     en = {
         access_denied = 'Access Denied',
@@ -25,7 +26,8 @@ return {
         blipTitle = 'Storage robbery in progress',
         removeStorage_successful = 'The storage were removed successfully!',
         removeStorage_failed_noCloseStorages = 'There are no close storages to you!',
-        removeAllStorages_successful = 'All storages were removed successfully!'
+        removeAllStorages_successful = 'All storages were removed successfully!',
+        currency = '$%s' -- or £?
     },
     de = {
         access_denied = 'Zugriff verweigert',
@@ -38,7 +40,8 @@ return {
         robberyInProgress = 'Ein Raubüberfall hat begonnen!',
         blipTitle = 'Lagerraub im Gange',
         removeStorage_successful = 'Der Speicher wurde erfolgreich entfernt!',
-        removeAllStorages_successful = 'Alle Speicher wurden erfolgreich entfernt!'
+        removeAllStorages_successful = 'Alle Speicher wurden erfolgreich entfernt!',
+        currency = '€%s'
     },
     ru = {
         access_denied = 'Доступ запрещен',
@@ -51,7 +54,8 @@ return {
         robberyInProgress = 'Ограбление началось!',
         blipTitle = 'Идет ограбление склада',
         removeStorage_successful = 'Хранилище успешно удалено!',
-        removeAllStorages_successful = 'Все хранилища были успешно удалены!'
+        removeAllStorages_successful = 'Все хранилища были успешно удалены!',
+        currency = '%s₽'
     },
     it = {
         access_denied = 'Accesso negato',
@@ -64,6 +68,7 @@ return {
         robberyInProgress = 'È iniziata una rapina!',
         blipTitle = 'Rapina al deposito in corso',
         removeStorage_successful = 'Lo spazio di archiviazione è stato rimosso con successo!',
-        removeAllStorages_successful = 'Tutti gli archivi sono stati rimossi con successo!'
+        removeAllStorages_successful = 'Tutti gli archivi sono stati rimossi con successo!',
+        currency = '€%s'
     }
 }

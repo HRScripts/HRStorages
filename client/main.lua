@@ -46,7 +46,7 @@ local createEverything = function()
         entity = seller,
         options = {
             {
-                label = ('Purchase a storage (%s$)'):format(config.store.price),
+                label = ('Purchase a storage (%s)'):format(Translation.currency:format(config.store.price)),
                 distance = 2,
                 icon = 'fa-solid fa-credit-card',
                 onSelect = function()
@@ -61,19 +61,19 @@ end
 
 -- OnEvents
 
-HRLib.OnStart(nil, createEverything)
+if IsEntityOnScreen(PlayerPedId()) then
+    createEverything()
+end
 
 HRLib.OnPlSpawn(function()
     if firstSpawned then
-        while IsScreenFadedOut() do
-            Wait(200)
+        while not IsEntityOnScreen(PlayerPedId()) do
+            Wait(10)
         end
 
-        if NetworkIsPlayerActive(PlayerId()) then
-            createEverything()
+        createEverything()
 
-            firstSpawned = false
-        end
+        firstSpawned = false
     end
 end)
 
