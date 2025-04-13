@@ -10,7 +10,7 @@ config.stashSettings.maxWeight *= 1000
 ---@param identifiers table
 ---@return boolean
 local isAllowed = function(identifiers)
-    if config.admins.enableAdditionalAcess then
+    if config.admins.enableAdditionalAccess then
         for i=1, #config.admins.allowedPlayers do
             local curr <const> = config.admins.allowedPlayers[i]
             local prefix <const> = select(1, HRLib.string.split(curr, ':'))
@@ -253,7 +253,7 @@ HRLib.RegCommand(config.store.commandName, false, true, function(_, _, IPlayer, 
     else
         FPlayer:Notify(Translation.access_denied, 'error')
     end
-end, false, { help = 'Create a storage' })
+end, { help = 'Create a storage' })
 
 HRLib.RegCommand(config.admins.removeStorageName, false, true, function(_, _, IPlayer, FPlayer)
     if IPlayer.source == 0 or isAllowed(IPlayer.identifier) then
@@ -264,7 +264,7 @@ HRLib.RegCommand(config.admins.removeStorageName, false, true, function(_, _, IP
             local found <const>, index <const> = HRLib.table.find(spawnedProps, closestObject.entity, true)
             if found then
                 DeleteEntity(closestObject.entity)
-                table.remove(spawnedProps, index)
+                table.remove(spawnedProps, index --[[@as integer]])
 
                 for i=1, #storages do
                     local currPos <const> = storages[i].position
@@ -287,7 +287,7 @@ HRLib.RegCommand(config.admins.removeStorageName, false, true, function(_, _, IP
     else
         FPlayer:Notify(Translation.access_denied, 'error')
     end
-end, not config.admins.enableAdditionalAcess, { help = 'Remove a storage', restricted = not config.admins.enableAdditionalAcess })
+end, { help = 'Remove a storage', restricted = not config.admins.enableAdditionalAccess })
 
 HRLib.RegCommand(config.admins.removeAllStoragesName, true, true, function(_, _, IPlayer, FPlayer)
     if IPlayer.source == 0 or isAllowed(IPlayer.identifier) then
@@ -312,7 +312,7 @@ HRLib.RegCommand(config.admins.removeAllStoragesName, true, true, function(_, _,
     else
         FPlayer:Notify(Translation.access_denied, 'error')
     end
-end, not config.admins.enableAdditionalAcess, { help = 'Remove All Storages', restricted = not config.admins.enableAdditionalAcess })
+end, { help = 'Remove All Storages', restricted = not config.admins.enableAdditionalAccess })
 
 -- Exports
 

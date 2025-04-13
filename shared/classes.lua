@@ -6,7 +6,7 @@
 ---@field signal { enableOwnerSignal: boolean?, blipRadius: number?, color: integer, alpha: number }
 ---@field stashSettings { maxSlots: integer, maxWeight: integer }
 ---@field store { ped: { models: string[], coords: vector4 }, price: integer, getMoneyFrom: 'cash'|'bank'|'both', commandName: string, blip: { sprite: integer, scale: number, colour: integer, label: string } }
----@field admins { enableAdditionalAcess: boolean, allowedPlayers: string[], removeStorageName: string, removeAllStoragesName: string }
+---@field admins { enableAdditionalAccess: boolean, allowedPlayers: string[], removeStorageName: string, removeAllStoragesName: string }
 
 ---@class HRStoragesClientBridge
 ---@field addZone fun(settigs: { entity: integer, options: table[] })
@@ -29,3 +29,4 @@
 ---@field removeStorage_successful string
 ---@field removeStorage_failed_noCloseStorages string
 ---@field removeAllStorages_successful string
+---@field currency string
